@@ -14,7 +14,7 @@ public class DataScrape {
 
 	public static void main(String[] args) {
 		System.out.println(getCurrentPrice("AAPL"));
-		System.out.println(getCloseLastNdays("AAPL", 100));
+		System.out.println(getVolumeLastNdays("AAPL", 100));
 	}
 	
 	public static double getCurrentPrice(String ticker){
@@ -42,6 +42,23 @@ public class DataScrape {
 			for(int i = 0; i < historicalData.length(); i++) {
 				JSONObject day = historicalData.getJSONObject(i);
 				lastNdays.add(day.getDouble("close"));
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		return lastNdays;
+	}
+	public static ArrayList<Double> getVolumeLastNdays(String ticker, int length){
+		ArrayList<Double> lastNdays = new ArrayList<Double>();
+		String URL = "https://financialmodelingprep.com/api/v3/historical-price-full/"+ticker+"?timeseries="+length;
+		JSONObject json = null;
+		JSONArray historicalData = null;
+		try {
+			json = new JSONObject(getWebPageSource(URL));
+			historicalData = json.getJSONArray("historical");
+			for(int i = 0; i < historicalData.length(); i++) {
+				JSONObject day = historicalData.getJSONObject(i);
+				lastNdays.add(day.getDouble("volume"));
 			}
 		} catch (Exception e) {
 			e.printStackTrace();
