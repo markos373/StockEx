@@ -3,6 +3,8 @@
   https://examples.javacodegeeks.com/desktop-java/jfreechart/jfree-candlestick-chart-example/
 */
 
+package graphs;
+
 import java.text.DateFormat;
 import java.text.NumberFormat;
 import java.util.Date;

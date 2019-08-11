@@ -1,3 +1,4 @@
+import graphs.CandlestickChart;
 import org.jfree.ui.ApplicationFrame;
 import org.jfree.ui.RefineryUtilities;
 import java.util.*;

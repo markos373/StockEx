@@ -3,6 +3,8 @@
   https://examples.javacodegeeks.com/desktop-java/jfreechart/jfree-candlestick-chart-example/
 */
 
+package graphs;
+
 import javax.swing.JPanel;
 import java.awt.BorderLayout;
 import java.awt.Color;
@@ -25,6 +27,7 @@ import org.jfree.chart.renderer.xy.CandlestickRenderer;
 import org.jfree.chart.renderer.xy.XYBarRenderer;
 
 import java.util.Date;
+
 import org.jfree.data.time.Day;
 import org.jfree.data.time.FixedMillisecond;
 import org.jfree.data.time.TimeSeries;

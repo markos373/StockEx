@@ -12,23 +12,16 @@ import org.json.JSONObject;
 
 public class DataScrape {
 
-	public static void main(String[] args) {
+	public static void main(String[] args) throws Exception{
 		System.out.println(getCurrentPrice("AAPL"));
 		System.out.println(getVolumeLastNdays("AAPL", 100));
 	}
 	
-	public static double getCurrentPrice(String ticker){
+	public static double getCurrentPrice(String ticker) throws Exception{
 		String URL = "https://financialmodelingprep.com/api/v3/stock/real-time-price/"+ticker;
-		
 		JSONObject json = null;
-		try {
-			json = new JSONObject(getWebPageSource(URL));
-			return (double) json.get("price");
-		} catch (Exception e) {
-		// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-		return 0.0;
+		json = new JSONObject(getWebPageSource(URL));
+		return (double) json.get("price");
 	}
 
 	public static ArrayList<Double> getCloseLastNdays(String ticker, int length){
