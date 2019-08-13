@@ -1,11 +1,16 @@
+import java.sql.Timestamp;
 
 public class Stock {
 	String ticker;
 	double shares;
+	double buyPrice;
+	Timestamp buyTime;
 	
-	public Stock(String ticker, double shares) {
+	public Stock(String ticker, double shares, double buyPrice, Timestamp buyTime) {
 		this.ticker = ticker;
 		this.shares = shares;
+		this.buyPrice = buyPrice;
+		this.buyTime = buyTime;
 	}
 	
 	public boolean sell(double shares) {
@@ -18,9 +23,20 @@ public class Stock {
 	public void buy(double shares) {
 		this.shares += shares;
 	}
-	
-	public double calculateValue(double price) {
-		return price*shares;
+
+
+	public boolean equals(Object o){
+		if (this == o){
+			return true;
+		}
+		if(o == null || o.getClass()!= this.getClass())
+			return false;
+		Stock stock = (Stock) o;
+		return (stock.ticker.equals(this.ticker) && stock.shares == this.shares && stock.buyPrice == this.buyPrice && stock.buyTime.equals(this.buyTime) );
+	}
+
+	public double calculateValue() {
+		return buyPrice*shares;
 	}
 	
 }
