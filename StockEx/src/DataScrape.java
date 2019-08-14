@@ -23,7 +23,24 @@ public class DataScrape {
 		json = new JSONObject(getWebPageSource(URL));
 		return (double) json.get("price");
 	}
-
+	public static ArrayList<String> getLastNdays(String ticker, int length){
+		ArrayList<String> lastNdays = new ArrayList<String>();
+		String URL = "https://financialmodelingprep.com/api/v3/historical-price-full/"+ticker+"?timeseries="+length;
+		JSONObject json = null;
+		JSONArray historicalData = null;
+		try {
+			json = new JSONObject(getWebPageSource(URL));
+			historicalData = json.getJSONArray("historical");
+			for(int i = 0; i < historicalData.length(); i++) {
+				JSONObject day = historicalData.getJSONObject(i);
+				lastNdays.add(day.getString("date"));
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		return lastNdays;
+	}
+	
 	public static ArrayList<Double> getCloseLastNdays(String ticker, int length){
 		ArrayList<Double> lastNdays = new ArrayList<Double>();
 		String URL = "https://financialmodelingprep.com/api/v3/historical-price-full/"+ticker+"?timeseries="+length;
