@@ -1,6 +1,7 @@
 import java.sql.*;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
 
@@ -36,7 +37,7 @@ public class Portfolio {
 		ArrayList<Stock> stocksForTicker = new ArrayList<>();
 		double stockCount = 0.0;
 		for (Stock stock: stocks){
-			if (stock.ticker == ticker){
+			if (stock.ticker.equals(ticker)){
 				stocksForTicker.add(stock);
 				stockCount += stock.shares;
 			}
@@ -44,27 +45,38 @@ public class Portfolio {
 		if (stocksForTicker.size() == 0 || stockCount < shares){
 			return false;
 		}
-		stocksForTicker.sort(new Comparator<Stock>() {
-			@Override
-			public int compare(Stock o1, Stock o2) {
-				return Double.compare(o1.buyPrice, o2.buyPrice);
-			}
-		});
+		Collections.sort(stocksForTicker);
 		double sellShares = shares;
-		while(sellShares != 0){
-			for(Stock stock: stocksForTicker){
+
+		for(Stock stock: stocksForTicker) {
+			while(sellShares > 0.0){
+				double sold;
 				double numOfStocks = stock.shares;
 				if (sellShares - numOfStocks >= 0){
 					sellShares -= numOfStocks;
 					stocks.remove(stock);
 					dbHandler.removeStock(stock.buyTime);
+					sold = stock.shares;
 				}
 				else{
-					stock.shares -= numOfStocks;
-					dbHandler.updateStock(stock.buyTime, (int)numOfStocks);
+					sold = sellShares;
+					stock.shares -= sellShares;
+					sellShares = 0.0;
+					dbHandler.updateStock(stock.buyPrice, (int)stock.shares);
+				}
+				try {
+					dbHandler.updateTransactionHistory(stock.ticker, "S", (int)sold, stock.buyPrice, DataScrape.getCurrentPrice(stock.ticker));
+				}
+				catch(Exception ex){
+					ex.printStackTrace();
 				}
 			}
+
+
 		}
+
+
+
 //
 //		if(stock != null) {
 //			boolean success = stock.sell(shares);

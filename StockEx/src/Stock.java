@@ -1,6 +1,6 @@
 import java.sql.Timestamp;
 
-public class Stock {
+public class Stock implements Comparable<Stock>{
 	String ticker;
 	double shares;
 	double buyPrice;
@@ -38,5 +38,22 @@ public class Stock {
 	public double calculateValue() {
 		return buyPrice*shares;
 	}
-	
+
+	public int compareTo(Stock stock) {
+		//ascending order
+		if (this.buyPrice < stock.buyPrice){
+			return -1;
+		}
+		else if (this.buyPrice > stock.buyPrice){
+			return 1;
+		}
+		else{
+			return 0;
+		}
+
+		//descending order
+		//return compareQuantity - this.quantity;
+
+	}
+
 }

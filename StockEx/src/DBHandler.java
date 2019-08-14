@@ -94,11 +94,11 @@ public class DBHandler {
         }
     }
 
-    public boolean updateStock(Timestamp time, int numOfStocks){
-        String query = "UPDATE userStocks set numStocks = ? where boughtDT = ?;";
+    public boolean updateStock(Double boughtPrice, int numOfStocks){
+        String query = "UPDATE userStocks set numStocks = ? where boughtPrice = ?;";
         try (PreparedStatement stat = connection.prepareStatement(query)) {
             stat.setInt(1, numOfStocks);
-            stat.setString(2, time.toString());
+            stat.setDouble(2, boughtPrice);
             int recordUpdate = stat.executeUpdate();
             System.out.println(recordUpdate + " row successfully removed from database!");
             return true;
@@ -110,25 +110,27 @@ public class DBHandler {
     }
 
     public boolean updateTransactionHistory(String ticker, String action, int numOfStocks, double buyPrice, double sellPrice){
-        String query = "INSERT INTO transactionHistory VALUES (?,?,?,?,?,?);";
-        try (PreparedStatement stat = connection.prepareStatement(query)) {
-            stat.setString(2, action);
-            stat.setString(3, ticker);
-            java.util.Date date = new java.util.Date();
-            SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss") ;
-            String currentDateTime = format.format(date);
-            stat.setString(1, currentDateTime);
-            stat.setInt(4, numOfStocks);
-            stat.setDouble(5, buyPrice);
-            stat.setDouble(6, sellPrice);
-            int recordUpdate = stat.executeUpdate();
-            System.out.println(recordUpdate + " rows successfully added into database!");
-            return true;
-        }
-        catch(SQLException ex){
-            ex.printStackTrace();
-            return false;
-        }
+            String query = "INSERT INTO transactionHistory VALUES (?,?,?,?,?,?);";
+            try (PreparedStatement stat = connection.prepareStatement(query)) {
+                stat.setString(2, action);
+                stat.setString(3, ticker);
+                java.util.Date date = new java.util.Date();
+                SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss") ;
+                String currentDateTime = format.format(date);
+                stat.setString(1, currentDateTime);
+                stat.setInt(4, numOfStocks);
+                stat.setDouble(5, buyPrice);
+                stat.setDouble(6, sellPrice);
+                int recordUpdate = stat.executeUpdate();
+                System.out.println(recordUpdate + " rows successfully added into database!");
+                return true;
+            }
+            catch(SQLException ex){
+                ex.printStackTrace();
+                return false;
+            }
+
+
     }
 
     public ArrayList<TransactionHistoryTuple<Timestamp, String, String, Integer, Double, Double>> getTransactionHistory(){

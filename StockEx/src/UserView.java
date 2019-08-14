@@ -72,7 +72,7 @@ public class UserView {
                 JFrame jFrame = new JFrame();
                 jFrame.add(new JScrollPane(table));
                 jFrame.setTitle("Transaction History");
-                jFrame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+//                jFrame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
                 jFrame.pack();
                 jFrame.setExtendedState(JFrame.MAXIMIZED_BOTH);
 
@@ -142,7 +142,7 @@ public class UserView {
                     if (response == JOptionPane.NO_OPTION) {
                     } else if (response == JOptionPane.YES_OPTION) {
                         String input = stock.getText();
-                        boolean returnval = portfolio.placeSellOrder(stock.getText(), Double.parseDouble(numOfStock.getText()));
+                        portfolio.placeSellOrder(stock.getText(), Double.parseDouble(numOfStock.getText()));
                         updateSidebar();
 
                     } else if (response == JOptionPane.CLOSED_OPTION) {
