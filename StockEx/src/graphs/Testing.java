@@ -8,8 +8,6 @@ import javax.swing.JFrame;
 import javax.swing.JPanel;
 import javax.swing.SwingUtilities;
 
-
-
 public class Testing {
 
   private static String d1 = "31-Dec-1998";
@@ -72,6 +70,6 @@ public class Testing {
 ////////////////////////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////////////
 
-  configureCandlestick();
+  //configureCandlestick();
   }
 }

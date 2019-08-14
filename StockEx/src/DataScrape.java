@@ -16,7 +16,7 @@ public class DataScrape {
 		System.out.println(getCurrentPrice("AAPL"));
 		System.out.println(getVolumeLastNdays("AAPL", 100));
 	}
-	
+
 	public static double getCurrentPrice(String ticker) throws Exception{
 		String URL = "https://financialmodelingprep.com/api/v3/stock/real-time-price/"+ticker;
 		JSONObject json = null;
@@ -41,6 +41,7 @@ public class DataScrape {
 		}
 		return lastNdays;
 	}
+	
 	public static ArrayList<Double> getVolumeLastNdays(String ticker, int length){
 		ArrayList<Double> lastNdays = new ArrayList<Double>();
 		String URL = "https://financialmodelingprep.com/api/v3/historical-price-full/"+ticker+"?timeseries="+length;
@@ -58,6 +59,7 @@ public class DataScrape {
 		}
 		return lastNdays;
 	}
+
 	public static ArrayList<Double> getOpenLastNdays(String ticker, int length){
 		ArrayList<Double> lastNdays = new ArrayList<Double>();
 		String URL = "https://financialmodelingprep.com/api/v3/historical-price-full/"+ticker+"?timeseries="+length;
@@ -75,6 +77,7 @@ public class DataScrape {
 		}
 		return lastNdays;
 	}
+
 	public static ArrayList<Double> getHighLastNdays(String ticker, int length){
 		ArrayList<Double> lastNdays = new ArrayList<Double>();
 		String URL = "https://financialmodelingprep.com/api/v3/historical-price-full/"+ticker+"?timeseries="+length;
@@ -92,6 +95,7 @@ public class DataScrape {
 		}
 		return lastNdays;
 	}
+
 	public static ArrayList<Double> getLowLastNdays(String ticker, int length){
 		ArrayList<Double> lastNdays = new ArrayList<Double>();
 		String URL = "https://financialmodelingprep.com/api/v3/historical-price-full/"+ticker+"?timeseries="+length;
@@ -109,6 +113,7 @@ public class DataScrape {
 		}
 		return lastNdays;
 	}
+
 	private static String getWebPageSource(String sURL) throws IOException {
 		URL url = new URL(sURL);
 		URLConnection urlCon = url.openConnection();

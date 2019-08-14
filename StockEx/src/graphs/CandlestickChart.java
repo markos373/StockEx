@@ -1,8 +1,3 @@
-/*
-  Implementation based off of code from the following link...
-  https://examples.javacodegeeks.com/desktop-java/jfreechart/jfree-candlestick-chart-example/
-*/
-
 package graphs;
 
 import javax.swing.JPanel;
@@ -150,7 +145,7 @@ public class CandlestickChart extends JPanel {
    *  @param v - volume
    *  @exception ParseException for illegal argument values
    */
-  public void addCandel(String d, double o, double c, double h, double l, long v)
+  public void addCandel(String d, double o, double c, double h, double l, double v)
     throws ParseException {
 
     Day day = new Day(FORMAT.parse(d));

@@ -11,6 +11,10 @@ import java.util.Vector;
 import javax.swing.*;
 import javax.swing.table.DefaultTableModel;
 
+import graphs.*;
+import java.util.Date;
+import java.text.ParseException;
+
 public class UserView {
 
     static DBHandler dbHandler = new DBHandler();;
@@ -23,6 +27,52 @@ public class UserView {
         for(Stock stock1: portfolio.getPortfolio()){
             listModel.addElement(stock1.buyTime + " " + stock1.ticker);
         }
+    }
+
+    /** Create the TimeSeriesGraph
+     *  @param stockName - the name or ticker of the stock
+     *  @param xTitle - the title of the dates axis
+     *  @param yTitle - the title of the price axis
+     *  @param values - an array of prices
+     *  @param dates  - am array of dates corresponding to prices (must be Date object)
+     *  @return a TimeSeriesGraph object
+     */
+    private JPanel makeTimeGraph(String stockName, String xTitle,
+            String yTitle, ArrayList<Double> values, ArrayList<Date> dates) {
+      TimeSeriesGraph graph = new TimeSeriesGraph(stockName);
+      graph.setValues(values, yTitle);
+      graph.setDates(dates, xTitle);
+      return graph.createChart();
+    }
+
+    /** Create the CandleStickChart: NOTE: it extends JPanel
+     *  [assumes that all arraylists are the same size]
+     *  @param stockName - the name of the ticker or stock
+     *  @param open   - ArrayList of open values
+     *  @param close  - ArrayList of close values
+     *  @param high   - ArrayList of high values
+     *  @param low    - ArrayList of low values
+     *  @param volume - ArrayList of volume values
+     *  @param dates  - ArrayList of String values
+     *  @return a CandleStickChart object, null if values are invalid
+     */
+    private CandlestickChart makeCandleChart(String stockName, ArrayList<Double> open,
+            ArrayList<Double> close, ArrayList<Double> high, ArrayList<Double> low,
+            ArrayList<Double> volume, ArrayList<String> dates) {
+
+      CandlestickChart chart = new CandlestickChart(stockName);
+      try {
+        for (int i = 0; i < open.size(); i++) {
+          chart.addCandel(dates.get(i), open.get(i), close.get(i), high.get(i), low.get(i), volume.get(i));
+        }
+        return chart;
+      } catch(ParseException e1) {
+        JOptionPane.showMessageDialog(null, "ERROR: couldn't parse date value");
+        return null;
+      } catch(Exception e2) {
+        JOptionPane.showMessageDialog(null, "ERROR: invalid value while building candlestick");
+        return null;
+      }
     }
 
     private static void generateMenu(JFrame frame){

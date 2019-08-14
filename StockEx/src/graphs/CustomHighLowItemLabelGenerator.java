@@ -1,8 +1,3 @@
-/*
-  Implementation based off of code from the following link...
-  https://examples.javacodegeeks.com/desktop-java/jfreechart/jfree-candlestick-chart-example/
-*/
-
 package graphs;
 
 import java.text.DateFormat;
