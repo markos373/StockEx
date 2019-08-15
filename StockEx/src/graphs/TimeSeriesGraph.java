@@ -51,8 +51,17 @@ public class TimeSeriesGraph {
    *  @param dates - ArrayList of string values for the x-axis
    *  @param axisTitle - the title of the x-axis
    */
-  public void setDates(ArrayList<Date> dates, String axisTitle) {
-    this.dates = new ArrayList<Date>(dates);
+  public void setDates(ArrayList<String> dates, String axisTitle) {
+    this.dates = new ArrayList<Date>();
+    try {
+      for (String s : dates) {
+        Date d = new SimpleDateFormat("yyyy-mm-dd").parse(s);
+        this.dates.add(d);
+      }
+    } catch(Exception e) {
+      System.err.println("ERROR: couldn't parse string date in TimeSeriesGraph");
+      e.printStackTrace();
+    }
     this.xaxisTitle = axisTitle;
   }
 

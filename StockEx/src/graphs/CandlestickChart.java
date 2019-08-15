@@ -35,7 +35,7 @@ import org.jfree.data.time.ohlc.OHLCSeriesCollection;
 
 public class CandlestickChart extends JPanel {
 
-  private static final DateFormat FORMAT = new SimpleDateFormat("dd-MMM-yyyy");
+  private static final DateFormat FORMAT = new SimpleDateFormat("yyyy-mm-dd");
   private static final String LABEL_ONE = "Price";
   private static final String LABEL_TWO = "Volume";
   private static final String LABEL_THREE = "Date";
@@ -83,7 +83,7 @@ public class CandlestickChart extends JPanel {
 
     // Render the candlestick chart
     CandlestickRenderer candlestickRenderer = new CandlestickRenderer(CandlestickRenderer.WIDTHMETHOD_AVERAGE,
-                        false, new CustomHighLowItemLabelGenerator(new SimpleDateFormat("dd-MMM-yyyy:mm"), new DecimalFormat("0.000")));
+                        false, new CustomHighLowItemLabelGenerator(new SimpleDateFormat("yyyy-dd-mm"), new DecimalFormat("0.000")));
     XYPlot candlestickSubplot = new XYPlot(candlestickDataset, null, priceAxis, candlestickRenderer);
     candlestickSubplot.setRangeGridlinePaint(GRIDLINE_COLOR);
     candlestickSubplot.setRangeGridlineStroke(new BasicStroke(1));
