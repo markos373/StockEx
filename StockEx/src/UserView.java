@@ -76,7 +76,6 @@ public class UserView {
         CandlestickChart chart = new CandlestickChart(stockName);
         for (int i = 0; i < open.size(); i++) {
             try {
-                System.out.println(volume.get(i));
                 chart.addCandel(dates.get(i), open.get(i), close.get(i), high.get(i), low.get(i), volume.get(i));
             } catch(Exception e) {
                 System.err.println("ERROR: something went wrong trying to add candel");
@@ -106,10 +105,10 @@ public class UserView {
         graphPanel.add(series);
         panel.add(graphPanel, BorderLayout.CENTER);
         panel.revalidate();
+        panel.repaint();
+        frame.revalidate();
         frame.repaint();
     }
-
-
 
 
     private static void generateMenu(JFrame frame){
@@ -143,10 +142,9 @@ public class UserView {
                     vector.add(transactionHistoryTuple.val3);
                     vector.add(transactionHistoryTuple.val4);
                     vector.add(transactionHistoryTuple.val5);
-                    if ((double)transactionHistoryTuple.val6 == -1.0){
+                    if ((double)transactionHistoryTuple.val6 == -1.0) {
                         vector.add("");
-                    }
-                    else{
+                    } else {
                         vector.add(transactionHistoryTuple.val6);
                     }
                     data.add(vector);
@@ -185,31 +183,31 @@ public class UserView {
                         StringBuilder sb = new StringBuilder();
                         ArrayList<Double> close = DataScrape.getCloseLastNdays(input, 30);
                         double closeAvg = 0.0;
-                        for (int i = 0; i < close.size(); i ++){
+                        for (int i = 0; i < close.size(); i++){
                             closeAvg += close.get(i);
                         }
                         String closeAv = String.format("%.2f", closeAvg / 30);
                         ArrayList<Double> open = DataScrape.getOpenLastNdays(input, 30);
                         double openAvg = 0.0;
-                        for (int i = 0; i < open.size(); i ++){
+                        for (int i = 0; i < open.size(); i++){
                             openAvg += open.get(i);
                         }
                         String openAv = String.format("%.2f", openAvg / 30);
                         ArrayList<Double> low = DataScrape.getLowLastNdays(input, 30);
                         double lowAvg = 0.0;
-                        for (int i = 0; i < low.size(); i ++){
+                        for (int i = 0; i < low.size(); i++){
                             lowAvg += low.get(i);
                         }
                         String lowAv = String.format("%.2f", lowAvg / 30);
                         ArrayList<Double> high = DataScrape.getHighLastNdays(input, 30);
                         double highAvg = 0.0;
-                        for (int i = 0; i < high.size(); i ++){
+                        for (int i = 0; i < high.size(); i++){
                             highAvg += high.get(i);
                         }
                         String highAv = String.format("%.2f", highAvg / 30);
                         ArrayList<Double> volume = DataScrape.getVolumeLastNdays(input, 30);
                         double volumeAvg = 0.0;
-                        for (int i = 0; i < volume.size(); i ++){
+                        for (int i = 0; i < volume.size(); i++){
                             volumeAvg += volume.get(i);
                         }
                         String volumeAv = String.format("%.2f", volumeAvg / 30);
@@ -367,7 +365,6 @@ public class UserView {
                 }
                 return c;
             }
-
         });
         pa.add(list, BorderLayout.EAST);
     }
