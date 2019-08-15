@@ -17,14 +17,18 @@ import java.text.ParseException;
 
 public class UserView {
 
-    static DBHandler dbHandler = new DBHandler();;
+    // Graphing default values
+    private static String defaultTicker = "AAPL";
+    private static int lastN = 100;
+
+    static DBHandler dbHandler = new DBHandler();
     static DefaultListModel listModel = new DefaultListModel();
     static DefaultListModel purchaseHistory = new DefaultListModel();
     static Portfolio portfolio = new Portfolio();
 
     private static void updateSidebar(){
         listModel.clear();
-        for(Stock stock1: portfolio.getPortfolio()){
+        for (Stock stock1: portfolio.getPortfolio()) {
             listModel.addElement(stock1.buyTime + " " + stock1.ticker);
         }
     }
@@ -37,15 +41,15 @@ public class UserView {
      *  @param dates  - am array of dates corresponding to prices (must be Date object)
      *  @return a TimeSeriesGraph object
      */
-    private JPanel makeTimeGraph(String stockName, String xTitle,
-            String yTitle, ArrayList<Double> values, ArrayList<Date> dates) {
+    private static JPanel makeTimeGraph(String stockName, String xTitle,
+            String yTitle, ArrayList<Double> values, ArrayList<String> dates) {
       TimeSeriesGraph graph = new TimeSeriesGraph(stockName);
       graph.setValues(values, yTitle);
       graph.setDates(dates, xTitle);
       return graph.createChart();
     }
 
-    /** Create the CandleStickChart: NOTE: it extends JPanel
+    /** Create the CandleStickChart, which extends JPanel
      *  [assumes that all arraylists are the same size]
      *  @param stockName - the name of the ticker or stock
      *  @param open   - ArrayList of open values
@@ -56,7 +60,7 @@ public class UserView {
      *  @param dates  - ArrayList of String values
      *  @return a CandleStickChart object, null if values are invalid
      */
-    private CandlestickChart makeCandleChart(String stockName, ArrayList<Double> open,
+    private static CandlestickChart makeCandleChart(String stockName, ArrayList<Double> open,
             ArrayList<Double> close, ArrayList<Double> high, ArrayList<Double> low,
             ArrayList<Double> volume, ArrayList<String> dates) {
 
@@ -73,6 +77,26 @@ public class UserView {
         JOptionPane.showMessageDialog(null, "ERROR: invalid value while building candlestick");
         return null;
       }
+    }
+
+    /** Makes API call and populates the grid, defaults to last 100 DAYS
+     *  @param panel - panel to add graphs too
+     *  @param ticker - the stock ticker to display
+     *  @param n - the last n days to display
+     */
+    private static void generateGraphs(JPanel panel, String ticker, int n) {
+      ArrayList<String> dates  = DataScrape.getLastNdays(ticker, n);
+      ArrayList<Double> high   = DataScrape.getHighLastNdays(ticker, n);
+      ArrayList<Double> low    = DataScrape.getLowLastNdays(ticker, n);
+      ArrayList<Double> open   = DataScrape.getOpenLastNdays(ticker, n);
+      ArrayList<Double> close  = DataScrape.getCloseLastNdays(ticker, n);
+      ArrayList<Double> volume = DataScrape.getVolumeLastNdays(ticker, n);
+      JPanel graphPanel = new JPanel(new FlowLayout());
+      CandlestickChart candle = makeCandleChart(ticker, open, close, high, low, volume, dates);
+      JPanel series = makeTimeGraph(ticker, "Day", "High", high, dates); // THIS IS HARDCODED NOW, USER SHOULD BE ABLE TO SWITCH TO HIGH,LOW,OPEN,CLOSE vals
+      graphPanel.add(candle);
+      graphPanel.add(series);
+      panel.add(graphPanel, BorderLayout.SOUTH);
     }
 
     private static void generateMenu(JFrame frame){
@@ -94,7 +118,7 @@ public class UserView {
                 // data of the table
                 Vector<Vector<Object>> data = new Vector<Vector<Object>>();
                 ArrayList<TransactionHistoryTuple<Timestamp, String, String, Integer, Double, Double>> stockData = dbHandler.getTransactionHistory();
-                for(TransactionHistoryTuple transactionHistoryTuple: stockData){
+                for (TransactionHistoryTuple transactionHistoryTuple: stockData){
                     Vector<Object> vector = new Vector<Object>();
                     vector.add(transactionHistoryTuple.val1);
                     if (transactionHistoryTuple.val2.equals("B")){
@@ -256,24 +280,27 @@ public class UserView {
 
 
     private static void createAndShowGUI() {
-        //Create and set up the window.
+        // Create and set up the window.
         JFrame frame = new JFrame("StockEx");
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 
-        //Display the window.
-        JPanel pa = new JPanel();
-        pa.setLayout(new BorderLayout());
+        // Display the window.
+        JPanel panel = new JPanel();
+        panel.setLayout(new BorderLayout());
         generateMenu(frame);
-        generateSidebar(pa);
-        frame.add(pa);
+        generateSidebar(panel);
+
+        // Panel holds two graphs, uses default AAPL and 100 days
+        generateGraphs(panel, defaultTicker, lastN);
+        ///////////////////////////////////////////////////////// [CALL THIS METHOD TO UPDATE GRAPHS]
+
+        frame.add(panel);
         frame.pack();
         frame.setExtendedState(JFrame.MAXIMIZED_BOTH);
         frame.setVisible(true);
     }
 
     public static void main(String[] args) {
-        //Schedule a job for the event-dispatching thread:
-        //creating and showing this application's GUI.
         javax.swing.SwingUtilities.invokeLater(new Runnable() {
             public void run() {
                 createAndShowGUI();
