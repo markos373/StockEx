@@ -17,7 +17,7 @@ public class DBHandler {
         try
         {
             // Can be used to check whether database is properly loaded
-            connection = DriverManager.getConnection(url, "root", "reddog");
+            connection = DriverManager.getConnection(url, "root", "sqlworkbench123");
             // Uncomment this to add rows to database
 //
         }
@@ -103,7 +103,7 @@ public class DBHandler {
             System.out.println(recordUpdate + " row successfully removed from database!");
             return true;
         }
-        catch(SQLException ex){
+        catch(SQLException ex) {
             ex.printStackTrace();
             return false;
         }
@@ -149,5 +149,3 @@ public class DBHandler {
     }
 
 }
-
-

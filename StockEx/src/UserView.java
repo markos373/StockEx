@@ -15,13 +15,21 @@ import graphs.*;
 import java.util.Date;
 import java.text.ParseException;
 
+/*
+javac -cp "../org.json.jar;./;../mysql-connector-java-8.0.17.jar;./graphs/jcommon-1.0.23.jar;./graphs/jfreechart-1.0.19.jar" *.java
+java -cp "../org.json.jar;./;../mysql-connector-java-8.0.17.jar;./graphs/jcommon-1.0.23.jar;./graphs/jfreechart-1.0.19.jar" UserView
+*/
+
 public class UserView {
 
-    static DBHandler dbHandler = new DBHandler();;
+    static DBHandler dbHandler = new DBHandler();
     static DefaultListModel listModel = new DefaultListModel();
     static DefaultListModel purchaseHistory = new DefaultListModel();
     static Portfolio portfolio = new Portfolio();
+    static JFrame frame;
     static JPanel graphPanel;
+    static JPanel pa;
+
 
     // Graphing default values
     private static String defaultTicker = "AAPL";
@@ -93,13 +101,12 @@ public class UserView {
         ArrayList<Double> volume = DataScrape.getVolumeLastNdays(ticker, n);
         graphPanel = new JPanel(new FlowLayout());
         CandlestickChart candle = makeCandleChart(ticker, open, close, high, low, volume, dates);
-        JPanel series = makeTimeGraph(ticker, "Day", "High", high, dates); // THIS IS HARDCODED NOW, USER SHOULD BE ABLE TO SWITCH TO HIGH,LOW,OPEN,CLOSE vals
+        JPanel series = makeTimeGraph(ticker, "Day", "High", high, dates);
         graphPanel.add(candle);
         graphPanel.add(series);
-        panel.remove(graphPanel);
         panel.add(graphPanel, BorderLayout.CENTER);
         panel.revalidate();
-        panel.repaint();
+        frame.repaint();
     }
 
 
@@ -152,7 +159,6 @@ public class UserView {
                 JFrame jFrame = new JFrame();
                 jFrame.add(new JScrollPane(table));
                 jFrame.setTitle("Transaction History");
-//                jFrame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
                 jFrame.pack();
                 jFrame.setExtendedState(JFrame.MAXIMIZED_BOTH);
 
@@ -220,13 +226,37 @@ public class UserView {
             }
         });
         JMenu menu = new JMenu("Stocks");
+
         JMenuItem graph = new JMenuItem("Graph");
         graph.addActionListener(new ActionListener() {
-            @Override
             public void actionPerformed(ActionEvent e) {
-                generateGraphs(panel, "GOOG", lastN);
+                JTextField xField = new JTextField(6);
+                JTextField yField = new JTextField(6);
+                JPanel myPanel = new JPanel();
+                myPanel.add(new JLabel("Ticker: "));
+                myPanel.add(xField);
+                myPanel.add(Box.createHorizontalStrut(15));
+                myPanel.add(new JLabel("Days: "));
+                myPanel.add(yField);
+                int result = JOptionPane.showConfirmDialog(null, myPanel, "What should we plot?", JOptionPane.OK_CANCEL_OPTION);
+                if (result == JOptionPane.OK_OPTION) {
+                  String ticker = xField.getText();
+                  String days = yField.getText();
+                  if (!ticker.equals("") && !days.equals("")) {
+                    System.out.println("Changing graph...");
+                    try {
+                      graphPanel.removeAll();
+                      generateGraphs(pa, ticker, lastN);
+                    } catch(Exception inputException) {
+                      JOptionPane.showMessageDialog(null, "Sorry, we can not process that request!");
+                    }
+                  } else {
+                    JOptionPane.showMessageDialog(null, "Sorry, we can not process that request!");
+                  }
+                }
             }
         });
+
         menubar.add(menu);
         menubar.add(search);
         menubar.add(transactionHistory);
@@ -348,19 +378,16 @@ public class UserView {
 
 
     private static void createAndShowGUI() {
-        //Create and set up the window.
-        JFrame frame = new JFrame("StockEx");
+        // Create and set up the window.
+        frame = new JFrame("StockEx");
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 
-        //Display the window.
-        JPanel pa = new JPanel();
-        panel = pa;
+        // Display the window.
+        pa = new JPanel();
         pa.setLayout(new BorderLayout());
         generateMenu(frame);
         generateSidebar(pa);
         generateGraphs(pa, defaultTicker, lastN);
-//
-//        makeCandleChart("AAPL, ");
         frame.add(pa);
         frame.pack();
         frame.setExtendedState(JFrame.MAXIMIZED_BOTH);
@@ -368,8 +395,6 @@ public class UserView {
     }
 
     public static void main(String[] args) {
-        //Schedule a job for the event-dispatching thread:
-        //creating and showing this application's GUI.
         javax.swing.SwingUtilities.invokeLater(new Runnable() {
             public void run() {
                 createAndShowGUI();
