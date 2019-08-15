@@ -112,12 +112,12 @@ public class TimeSeriesGraph {
    */
   private JFreeChart createChartHelper(final XYDataset dataset) {
     return ChartFactory.createTimeSeriesChart(
-      this.title,
-      this.xaxisTitle,
-      this.yaxisTitle,
-      dataset,
-      false,
-      false,
-      false);
+            this.title,
+            this.xaxisTitle,
+            this.yaxisTitle,
+            dataset,
+            false,
+            false,
+            false);
   }
 }

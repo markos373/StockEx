@@ -17,18 +17,20 @@ import java.text.ParseException;
 
 public class UserView {
 
-    // Graphing default values
-    private static String defaultTicker = "AAPL";
-    private static int lastN = 100;
-
-    static DBHandler dbHandler = new DBHandler();
+    static DBHandler dbHandler = new DBHandler();;
     static DefaultListModel listModel = new DefaultListModel();
     static DefaultListModel purchaseHistory = new DefaultListModel();
     static Portfolio portfolio = new Portfolio();
+    static JPanel graphPanel;
+
+    // Graphing default values
+    private static String defaultTicker = "AAPL";
+    private static int lastN = 100;
+    private static JPanel panel;
 
     private static void updateSidebar(){
         listModel.clear();
-        for (Stock stock1: portfolio.getPortfolio()) {
+        for(Stock stock1: portfolio.getPortfolio()){
             listModel.addElement(stock1.buyTime + " " + stock1.ticker);
         }
     }
@@ -42,11 +44,11 @@ public class UserView {
      *  @return a TimeSeriesGraph object
      */
     private static JPanel makeTimeGraph(String stockName, String xTitle,
-            String yTitle, ArrayList<Double> values, ArrayList<String> dates) {
-      TimeSeriesGraph graph = new TimeSeriesGraph(stockName);
-      graph.setValues(values, yTitle);
-      graph.setDates(dates, xTitle);
-      return graph.createChart();
+                                        String yTitle, ArrayList<Double> values, ArrayList<String> dates) {
+        TimeSeriesGraph graph = new TimeSeriesGraph(stockName);
+        graph.setValues(values, yTitle);
+        graph.setDates(dates, xTitle);
+        return graph.createChart();
     }
 
     /** Create the CandleStickChart, which extends JPanel
@@ -61,20 +63,20 @@ public class UserView {
      *  @return a CandleStickChart object, null if values are invalid
      */
     private static CandlestickChart makeCandleChart(String stockName, ArrayList<Double> open,
-            ArrayList<Double> close, ArrayList<Double> high, ArrayList<Double> low,
-            ArrayList<Double> volume, ArrayList<String> dates) {
+                                                    ArrayList<Double> close, ArrayList<Double> high, ArrayList<Double> low,
+                                                    ArrayList<Double> volume, ArrayList<String> dates) {
 
-      CandlestickChart chart = new CandlestickChart(stockName);
-      for (int i = 0; i < open.size(); i++) {
-        try {
-          chart.addCandel(dates.get(i), open.get(i), close.get(i), high.get(i), low.get(i), volume.get(i));
-        } catch(Exception e) {
-          System.err.println("ERROR: something went wrong trying to add candel");
-          e.printStackTrace();
-          continue;
+        CandlestickChart chart = new CandlestickChart(stockName);
+        for (int i = 0; i < open.size(); i++) {
+            try {
+                chart.addCandel(dates.get(i), open.get(i), close.get(i), high.get(i), low.get(i), volume.get(i));
+            } catch(Exception e) {
+                System.err.println("ERROR: something went wrong trying to add candel");
+                e.printStackTrace();
+                continue;
+            }
         }
-      }
-      return chart;
+        return chart;
     }
 
     /** Makes API call and populates the grid, defaults to last 100 DAYS
@@ -83,19 +85,25 @@ public class UserView {
      *  @param n - the last n days to display
      */
     private static void generateGraphs(JPanel panel, String ticker, int n) {
-      ArrayList<String> dates  = DataScrape.getLastNdays(ticker, n);
-      ArrayList<Double> high   = DataScrape.getHighLastNdays(ticker, n);
-      ArrayList<Double> low    = DataScrape.getLowLastNdays(ticker, n);
-      ArrayList<Double> open   = DataScrape.getOpenLastNdays(ticker, n);
-      ArrayList<Double> close  = DataScrape.getCloseLastNdays(ticker, n);
-      ArrayList<Double> volume = DataScrape.getVolumeLastNdays(ticker, n);
-      JPanel graphPanel = new JPanel(new FlowLayout());
-      CandlestickChart candle = makeCandleChart(ticker, open, close, high, low, volume, dates);
-      JPanel series = makeTimeGraph(ticker, "Day", "High", high, dates); // THIS IS HARDCODED NOW, USER SHOULD BE ABLE TO SWITCH TO HIGH,LOW,OPEN,CLOSE vals
-      graphPanel.add(candle);
-      graphPanel.add(series);
-      panel.add(graphPanel, BorderLayout.SOUTH);
+        ArrayList<String> dates  = DataScrape.getLastNdays(ticker, n);
+        ArrayList<Double> high   = DataScrape.getHighLastNdays(ticker, n);
+        ArrayList<Double> low    = DataScrape.getLowLastNdays(ticker, n);
+        ArrayList<Double> open   = DataScrape.getOpenLastNdays(ticker, n);
+        ArrayList<Double> close  = DataScrape.getCloseLastNdays(ticker, n);
+        ArrayList<Double> volume = DataScrape.getVolumeLastNdays(ticker, n);
+        graphPanel = new JPanel(new FlowLayout());
+        CandlestickChart candle = makeCandleChart(ticker, open, close, high, low, volume, dates);
+        JPanel series = makeTimeGraph(ticker, "Day", "High", high, dates); // THIS IS HARDCODED NOW, USER SHOULD BE ABLE TO SWITCH TO HIGH,LOW,OPEN,CLOSE vals
+        graphPanel.add(candle);
+        graphPanel.add(series);
+        panel.remove(graphPanel);
+        panel.add(graphPanel, BorderLayout.CENTER);
+        panel.revalidate();
+        panel.repaint();
     }
+
+
+
 
     private static void generateMenu(JFrame frame){
         JMenuBar menubar = new JMenuBar();
@@ -116,7 +124,7 @@ public class UserView {
                 // data of the table
                 Vector<Vector<Object>> data = new Vector<Vector<Object>>();
                 ArrayList<TransactionHistoryTuple<Timestamp, String, String, Integer, Double, Double>> stockData = dbHandler.getTransactionHistory();
-                for (TransactionHistoryTuple transactionHistoryTuple: stockData){
+                for(TransactionHistoryTuple transactionHistoryTuple: stockData){
                     Vector<Object> vector = new Vector<Object>();
                     vector.add(transactionHistoryTuple.val1);
                     if (transactionHistoryTuple.val2.equals("B")){
@@ -158,9 +166,71 @@ public class UserView {
 //                JOptionPane.showMessageDialog(null,  stringBuilder.toString());
             }
         });
+        JMenuItem search = new JMenuItem("Search");
+        search.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                JTextField stock = new JTextField();
+                Object[] message = {
+                        "Stock Ticker:", stock,
+                };
+                int response1 = JOptionPane.showConfirmDialog(null, message, "Search for Stock Information", JOptionPane.OK_CANCEL_OPTION);
+                if (response1 == JOptionPane.YES_OPTION){
+                    try{
+                        String input = stock.getText();
+
+                        StringBuilder sb = new StringBuilder();
+                        ArrayList<Double> close = DataScrape.getCloseLastNdays("AAPL", 30);
+                        double closeAvg = 0.0;
+                        for (int i = 0; i < close.size(); i ++){
+                            closeAvg += close.get(i);
+                        }
+                        closeAvg = closeAvg / 30;
+                        ArrayList<Double> open = DataScrape.getOpenLastNdays("AAPL", 30);
+                        double openAvg = 0.0;
+                        for (int i = 0; i < open.size(); i ++){
+                            openAvg += open.get(i);
+                        }
+                        openAvg = openAvg / 30;
+                        ArrayList<Double> low = DataScrape.getLowLastNdays("AAPL", 30);
+                        double lowAvg = 0.0;
+                        for (int i = 0; i < low.size(); i ++){
+                            lowAvg += low.get(i);
+                        }
+                        lowAvg = lowAvg / 30;
+                        ArrayList<Double> high = DataScrape.getHighLastNdays("AAPL", 30);
+                        double highAvg = 0.0;
+                        for (int i = 0; i < high.size(); i ++){
+                            highAvg += high.get(i);
+                        }
+                        highAvg = highAvg / 30;
+                        ArrayList<Double> volume = DataScrape.getVolumeLastNdays("AAPL", 30);
+                        double volumeAvg = 0.0;
+                        for (int i = 0; i < volume.size(); i ++){
+                            volumeAvg += volume.get(i);
+                        }
+                        volumeAvg = volumeAvg / 30;
+                        sb.append("Current Price: ").append(DataScrape.getCurrentPrice(input)).append("\n").append("Average Open Price (30d): ").append(openAvg).append("\n").append("Average Close Price (30d): ").append(closeAvg).append("\n").append("Average High Price (30d): ").append(highAvg).append("\n").append("Average Low Price (30d): ").append(lowAvg).append("\n").append("Average Volume (30d): ").append(volumeAvg);
+                        JOptionPane.showConfirmDialog(null, sb.toString(), stock.getText() + " information", JOptionPane.DEFAULT_OPTION);
+                    }
+                    catch (Exception ex){
+                        JOptionPane.showMessageDialog(frame, "Invalid stock ticker!");
+                    }
+                }
+            }
+        });
         JMenu menu = new JMenu("Stocks");
+        JMenuItem graph = new JMenuItem("Graph");
+        graph.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                generateGraphs(panel, "GOOG", lastN);
+            }
+        });
         menubar.add(menu);
+        menubar.add(search);
         menubar.add(transactionHistory);
+        menubar.add(graph);
         JMenuItem addStock = new JMenuItem("Add Stock");
         addStock.addActionListener(new ActionListener() {
             @Override
@@ -209,7 +279,7 @@ public class UserView {
                 };
                 int response1 = JOptionPane.showConfirmDialog(null, message, "Enter Stock Information", JOptionPane.OK_CANCEL_OPTION);
                 if (response1 == JOptionPane.OK_OPTION){
-                    int response = JOptionPane.showConfirmDialog(null, "Are you sure you want to remove " + stock.getText() +" from your portfolio?", "Confirm Portfolio Modification",
+                    int response = JOptionPane.showConfirmDialog(null, "Are you sure you want to remove " + stock.getText() +" stock from your portfolio?", "Confirm Portfolio Modification",
                             JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE);
                     if (response == JOptionPane.NO_OPTION) {
                     } else if (response == JOptionPane.YES_OPTION) {
@@ -278,27 +348,28 @@ public class UserView {
 
 
     private static void createAndShowGUI() {
-        // Create and set up the window.
+        //Create and set up the window.
         JFrame frame = new JFrame("StockEx");
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 
-        // Display the window.
-        JPanel panel = new JPanel();
-        panel.setLayout(new BorderLayout());
+        //Display the window.
+        JPanel pa = new JPanel();
+        panel = pa;
+        pa.setLayout(new BorderLayout());
         generateMenu(frame);
-        generateSidebar(panel);
-
-        // Panel holds two graphs, uses default AAPL and 100 days
-        generateGraphs(panel, defaultTicker, lastN);
-        ///////////////////////////////////////////////////////// [CALL THIS METHOD TO UPDATE GRAPHS]
-
-        frame.add(panel);
+        generateSidebar(pa);
+        generateGraphs(pa, defaultTicker, lastN);
+//
+//        makeCandleChart("AAPL, ");
+        frame.add(pa);
         frame.pack();
         frame.setExtendedState(JFrame.MAXIMIZED_BOTH);
         frame.setVisible(true);
     }
 
     public static void main(String[] args) {
+        //Schedule a job for the event-dispatching thread:
+        //creating and showing this application's GUI.
         javax.swing.SwingUtilities.invokeLater(new Runnable() {
             public void run() {
                 createAndShowGUI();

@@ -83,7 +83,7 @@ public class CandlestickChart extends JPanel {
 
     // Render the candlestick chart
     CandlestickRenderer candlestickRenderer = new CandlestickRenderer(CandlestickRenderer.WIDTHMETHOD_AVERAGE,
-                        false, new CustomHighLowItemLabelGenerator(new SimpleDateFormat("yyyy-dd-mm"), new DecimalFormat("0.000")));
+            false, new CustomHighLowItemLabelGenerator(new SimpleDateFormat("yyyy-dd-mm"), new DecimalFormat("0.000")));
     XYPlot candlestickSubplot = new XYPlot(candlestickDataset, null, priceAxis, candlestickRenderer);
     candlestickSubplot.setRangeGridlinePaint(GRIDLINE_COLOR);
     candlestickSubplot.setRangeGridlineStroke(new BasicStroke(1));
@@ -104,7 +104,7 @@ public class CandlestickChart extends JPanel {
     XYBarRenderer dateRenderer = new XYBarRenderer();
     dateRenderer.setShadowVisible(false);
     dateRenderer.setBaseToolTipGenerator(new StandardXYToolTipGenerator("Volume--> Time={1} Size={2}",
-                                         new SimpleDateFormat("dd-MMM-yyyy:mm"), new DecimalFormat("0")));
+            new SimpleDateFormat("dd-MMM-yyyy:mm"), new DecimalFormat("0")));
 
     // Create the volume subplot
     XYPlot volumeSubplot = new XYPlot(volumeDataset, null, volumeAxis, dateRenderer);
@@ -146,7 +146,7 @@ public class CandlestickChart extends JPanel {
    *  @exception ParseException for illegal argument values
    */
   public void addCandel(String d, double o, double c, double h, double l, double v)
-    throws ParseException {
+          throws ParseException {
 
     Day day = new Day(FORMAT.parse(d));
     ohlcSeries.add(day, o, h, l, c);
