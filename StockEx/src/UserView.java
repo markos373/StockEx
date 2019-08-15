@@ -30,7 +30,6 @@ public class UserView {
     static JPanel graphPanel;
     static JPanel pa;
 
-
     // Graphing default values
     private static String defaultTicker = "AAPL";
     private static int lastN = 100;
@@ -77,6 +76,7 @@ public class UserView {
         CandlestickChart chart = new CandlestickChart(stockName);
         for (int i = 0; i < open.size(); i++) {
             try {
+                System.out.println(volume.get(i));
                 chart.addCandel(dates.get(i), open.get(i), close.get(i), high.get(i), low.get(i), volume.get(i));
             } catch(Exception e) {
                 System.err.println("ERROR: something went wrong trying to add candel");
@@ -177,86 +177,82 @@ public class UserView {
             @Override
             public void actionPerformed(ActionEvent e) {
                 JTextField stock = new JTextField();
-                Object[] message = {
-                        "Stock Ticker:", stock,
-                };
+                Object[] message = { "Stock Ticker:", stock };
                 int response1 = JOptionPane.showConfirmDialog(null, message, "Search for Stock Information", JOptionPane.OK_CANCEL_OPTION);
                 if (response1 == JOptionPane.YES_OPTION){
-                    try{
+                    try {
                         String input = stock.getText();
-
                         StringBuilder sb = new StringBuilder();
-                        ArrayList<Double> close = DataScrape.getCloseLastNdays("AAPL", 30);
+                        ArrayList<Double> close = DataScrape.getCloseLastNdays(input, 30);
                         double closeAvg = 0.0;
                         for (int i = 0; i < close.size(); i ++){
                             closeAvg += close.get(i);
                         }
-                        closeAvg = closeAvg / 30;
-                        ArrayList<Double> open = DataScrape.getOpenLastNdays("AAPL", 30);
+                        String closeAv = String.format("%.2f", closeAvg / 30);
+                        ArrayList<Double> open = DataScrape.getOpenLastNdays(input, 30);
                         double openAvg = 0.0;
                         for (int i = 0; i < open.size(); i ++){
                             openAvg += open.get(i);
                         }
-                        openAvg = openAvg / 30;
-                        ArrayList<Double> low = DataScrape.getLowLastNdays("AAPL", 30);
+                        String openAv = String.format("%.2f", openAvg / 30);
+                        ArrayList<Double> low = DataScrape.getLowLastNdays(input, 30);
                         double lowAvg = 0.0;
                         for (int i = 0; i < low.size(); i ++){
                             lowAvg += low.get(i);
                         }
-                        lowAvg = lowAvg / 30;
-                        ArrayList<Double> high = DataScrape.getHighLastNdays("AAPL", 30);
+                        String lowAv = String.format("%.2f", lowAvg / 30);
+                        ArrayList<Double> high = DataScrape.getHighLastNdays(input, 30);
                         double highAvg = 0.0;
                         for (int i = 0; i < high.size(); i ++){
                             highAvg += high.get(i);
                         }
-                        highAvg = highAvg / 30;
-                        ArrayList<Double> volume = DataScrape.getVolumeLastNdays("AAPL", 30);
+                        String highAv = String.format("%.2f", highAvg / 30);
+                        ArrayList<Double> volume = DataScrape.getVolumeLastNdays(input, 30);
                         double volumeAvg = 0.0;
                         for (int i = 0; i < volume.size(); i ++){
                             volumeAvg += volume.get(i);
                         }
-                        volumeAvg = volumeAvg / 30;
-                        sb.append("Current Price: ").append(DataScrape.getCurrentPrice(input)).append("\n").append("Average Open Price (30d): ").append(openAvg).append("\n").append("Average Close Price (30d): ").append(closeAvg).append("\n").append("Average High Price (30d): ").append(highAvg).append("\n").append("Average Low Price (30d): ").append(lowAvg).append("\n").append("Average Volume (30d): ").append(volumeAvg);
+                        String volumeAv = String.format("%.2f", volumeAvg / 30);
+                        sb.append("Current Price: ").append(DataScrape.getCurrentPrice(input)).append("\nAverage Open Price (30d): " + openAv).append("\nAverage Close Price (30d): " + closeAv).append("\nAverage High Price (30d):   " + highAv).append("\nAverage Low Price (30d):   " + lowAv).append("\nAverage Volume (30d):       " + volumeAv);
                         JOptionPane.showConfirmDialog(null, sb.toString(), stock.getText() + " information", JOptionPane.DEFAULT_OPTION);
-                    }
-                    catch (Exception ex){
+                    } catch (Exception ex) {
                         JOptionPane.showMessageDialog(frame, "Invalid stock ticker!");
                     }
                 }
             }
         });
-        JMenu menu = new JMenu("Stocks");
 
-        JMenuItem graph = new JMenuItem("Graph");
-        graph.addActionListener(new ActionListener() {
-            public void actionPerformed(ActionEvent e) {
-                JTextField xField = new JTextField(6);
-                JTextField yField = new JTextField(6);
-                JPanel myPanel = new JPanel();
-                myPanel.add(new JLabel("Ticker: "));
-                myPanel.add(xField);
-                myPanel.add(Box.createHorizontalStrut(15));
-                myPanel.add(new JLabel("Days: "));
-                myPanel.add(yField);
-                int result = JOptionPane.showConfirmDialog(null, myPanel, "What should we plot?", JOptionPane.OK_CANCEL_OPTION);
-                if (result == JOptionPane.OK_OPTION) {
-                  String ticker = xField.getText();
-                  String days = yField.getText();
-                  if (!ticker.equals("") && !days.equals("")) {
-                    System.out.println("Changing graph...");
-                    try {
-                      graphPanel.removeAll();
-                      generateGraphs(pa, ticker, lastN);
-                    } catch(Exception inputException) {
-                      JOptionPane.showMessageDialog(null, "Sorry, we can not process that request!");
-                    }
-                  } else {
-                    JOptionPane.showMessageDialog(null, "Sorry, we can not process that request!");
-                  }
+      // Change the currently displayed graph
+      JMenuItem graph = new JMenuItem("Graph");
+      graph.addActionListener(new ActionListener() {
+        public void actionPerformed(ActionEvent e) {
+            JTextField xField = new JTextField(6);
+            JTextField yField = new JTextField(6);
+            JPanel myPanel = new JPanel();
+            myPanel.add(new JLabel("Ticker: "));
+            myPanel.add(xField);
+            myPanel.add(Box.createHorizontalStrut(15));
+            myPanel.add(new JLabel("Days: "));
+            myPanel.add(yField);
+            int result = JOptionPane.showConfirmDialog(null, myPanel, "What should we plot?", JOptionPane.OK_CANCEL_OPTION);
+            if (result == JOptionPane.OK_OPTION) {
+              String ticker = xField.getText();
+              String days = yField.getText();
+              if (!ticker.equals("") && !days.equals("")) {
+                try {
+                  graphPanel.removeAll();
+                  generateGraphs(pa, ticker, lastN);
+                } catch(Exception inputException) {
+                  JOptionPane.showMessageDialog(null, "Sorry, we can not process that request!");
                 }
+              } else {
+                JOptionPane.showMessageDialog(null, "Sorry, we can not process that request!");
+              }
             }
+          }
         });
 
+        JMenu menu = new JMenu("Stocks");
         menubar.add(menu);
         menubar.add(search);
         menubar.add(transactionHistory);
