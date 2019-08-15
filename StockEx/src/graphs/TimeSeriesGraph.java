@@ -53,14 +53,15 @@ public class TimeSeriesGraph {
    */
   public void setDates(ArrayList<String> dates, String axisTitle) {
     this.dates = new ArrayList<Date>();
-    try {
-      for (String s : dates) {
-        Date d = new SimpleDateFormat("yyyy-mm-dd").parse(s);
+    for (String s : dates) {
+      try {
+        Date d = new SimpleDateFormat("yyyy-MM-dd").parse(s);
         this.dates.add(d);
+      } catch(Exception e) {
+        System.err.println("ERROR: couldn't parse string date in TimeSeriesGraph");
+        e.printStackTrace();
+        continue;
       }
-    } catch(Exception e) {
-      System.err.println("ERROR: couldn't parse string date in TimeSeriesGraph");
-      e.printStackTrace();
     }
     this.xaxisTitle = axisTitle;
   }
@@ -74,11 +75,11 @@ public class TimeSeriesGraph {
     TimeSeries series = new TimeSeries(this.yaxisTitle);
     for (int i = 0; i < dates.size(); i++) {
       try {
-        series.add(new Day(dates.get(i)), values.get(i));
+        series.addOrUpdate(new Day(dates.get(i)), values.get(i));
       } catch(SeriesException e) {
         System.err.println("[ERROR] couldn't add to TimeSeriesGraph...");
         e.printStackTrace();
-        return null;
+        continue;
       }
     }
     final XYDataset dataset = new TimeSeriesCollection(series);

@@ -65,18 +65,16 @@ public class UserView {
             ArrayList<Double> volume, ArrayList<String> dates) {
 
       CandlestickChart chart = new CandlestickChart(stockName);
-      try {
-        for (int i = 0; i < open.size(); i++) {
+      for (int i = 0; i < open.size(); i++) {
+        try {
           chart.addCandel(dates.get(i), open.get(i), close.get(i), high.get(i), low.get(i), volume.get(i));
+        } catch(Exception e) {
+          System.err.println("ERROR: something went wrong trying to add candel");
+          e.printStackTrace();
+          continue;
         }
-        return chart;
-      } catch(ParseException e1) {
-        JOptionPane.showMessageDialog(null, "ERROR: couldn't parse date value");
-        return null;
-      } catch(Exception e2) {
-        JOptionPane.showMessageDialog(null, "ERROR: invalid value while building candlestick");
-        return null;
       }
+      return chart;
     }
 
     /** Makes API call and populates the grid, defaults to last 100 DAYS

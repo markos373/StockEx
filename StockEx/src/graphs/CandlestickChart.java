@@ -35,7 +35,7 @@ import org.jfree.data.time.ohlc.OHLCSeriesCollection;
 
 public class CandlestickChart extends JPanel {
 
-  private static final DateFormat FORMAT = new SimpleDateFormat("yyyy-mm-dd");
+  private static final DateFormat FORMAT = new SimpleDateFormat("yyyy-MM-dd");
   private static final String LABEL_ONE = "Price";
   private static final String LABEL_TWO = "Volume";
   private static final String LABEL_THREE = "Date";
