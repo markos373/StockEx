@@ -4,7 +4,10 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
-
+/**
+*Portfolio handles a list of Stocks which represent a client's current shares of their stocks
+*
+*/
 public class Portfolio {
 	public ArrayList<Stock> stocks;
 	static DBHandler dbHandler = new DBHandler();;
@@ -94,11 +97,17 @@ public class Portfolio {
 //		return true;
 		return true;
 	}
-
+	/**
+	*@return ArrayList<Stock> containing portfolio stocks.
+	*
+	*/
 	public ArrayList<Stock> getPortfolio(){
 		return this.stocks;
 	}
-
+	/**
+	*@return double sum of all stocks in portfolio.
+	*
+	*/
 	public double getPortfolioValue(){
 		double sum = 0.0;
 		for (Stock stock : stocks) {
